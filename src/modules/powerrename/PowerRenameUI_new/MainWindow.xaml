@@ -26,7 +26,7 @@
                     <ColumnDefinition Width="*"/>
                 </Grid.ColumnDefinitions>
 
-                <CheckBox TabIndex="0"   Grid.Column="0" Content=""  AutomationProperties.Name="{x:Bind Original}" AutomationProperties.HelpText="{x:Bind Renamed}"  />
+                <CheckBox TabIndex="0" Grid.Column="0" Checked="Checked_ids" Unchecked="Checked_ids"  Content="" Name="{x:Bind IdStr}" AutomationProperties.Name="{x:Bind Original}" AutomationProperties.HelpText="{x:Bind Renamed}" IsChecked="{x:Bind Checked, Mode=TwoWay}" />
                 <Image Width="16" Source="ms-appx:///Assets/file.png" HorizontalAlignment="Left" Grid.Column="1"/>
 
                 <TextBlock Text="{x:Bind Original, Mode=OneWay}" Width="{Binding ElementName=WidthSlider, Path=Value, Mode=OneWay}" FontFamily="SemiBold" Foreground="Black"  VerticalAlignment="Center"  FontSize="12" Grid.Column="2"/>
@@ -46,7 +46,7 @@
                     <RowDefinition Height="*" />
                 </Grid.RowDefinitions>
 
-                <CheckBox Grid.Row="0" TabIndex="0"  IsTabStop="true"  Grid.Column="0" Content="" AutomationProperties.Name="{x:Bind Original}" AutomationProperties.HelpText="{x:Bind Renamed}"  />
+                <CheckBox TabIndex="0" IsTabStop="true" Grid.Row="0" Grid.Column="0" Checked="Checked_ids" Unchecked="Checked_ids" Content="" Name="{x:Bind IdStr}" AutomationProperties.Name="{x:Bind Original}" AutomationProperties.HelpText="{x:Bind Renamed}" IsChecked="{x:Bind Checked, Mode=TwoWay}" />
                 <Image Width="16" Source="ms-appx:///Assets/folder.png" HorizontalAlignment="Left" Grid.Column="1"/>
 
                 <TextBlock Text="{x:Bind Original, Mode=OneWay}" Width="{Binding ElementName=WidthSlider, Path=Value, Mode=OneWay}" FontFamily="SemiBold" Foreground="Black"  VerticalAlignment="Center"  FontSize="12" Grid.Column="2"/>
@@ -95,7 +95,7 @@
                         </Style>
                     </ListView.ItemContainerStyle>
                 </ListView>
-                </Grid>
+            </Grid>
         </DataTemplate>
     </UserControl.Resources>
 
