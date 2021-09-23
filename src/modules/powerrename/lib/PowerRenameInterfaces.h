@@ -1,5 +1,7 @@
 #pragma once
 #include "pch.h"
+#include <string>
+#include <vector>
 
 enum PowerRenameFlags
 {
@@ -125,6 +127,7 @@ interface __declspec(uuid("04AAFABE-B76E-4E13-993A-B5941F52B139")) IPowerRenameM
 {
 public:
     IFACEMETHOD(AddMRUString)(_In_ PCWSTR entry) = 0;
+    IFACEMETHOD_(const std::vector<std::wstring>&, GetMRUStrings)() = 0;
 };
 
 interface __declspec(uuid("CE8C8616-C1A8-457A-9601-10570F5B9F1F")) IPowerRenameEnum : public IUnknown

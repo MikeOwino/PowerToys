@@ -103,6 +103,7 @@ bool AppWindow::OnCreate(HWND, LPCREATESTRUCT) noexcept
     ReadSettings();
 
     m_mainUserControl.BtnRename().IsEnabled(false);
+    InitAutoComplete();
     SearchReplaceChanged();
     return true;
 }
@@ -191,6 +192,11 @@ void AppWindow::PopulateExplorerItems()
 
             PWSTR originalName = nullptr;
             renameItem->GetOriginalName(&originalName);
+            PWSTR newName = nullptr;
+            renameItem->GetNewName(&newName);
+
+            bool selected;
+            renameItem->GetSelected(&selected);
 
             UINT depth = 0;
             renameItem->GetDepth(&depth);
@@ -213,10 +219,47 @@ void AppWindow::PopulateExplorerItems()
                 }
                 currDepth = depth;
             }
-            m_mainUserControl.AddExplorerItem(id, originalName, isFolder ? 0 : 1, parents.top());
+            m_mainUserControl.AddExplorerItem(
+                id, originalName, newName == nullptr ? hstring{} : hstring{ newName }, isFolder ? 0 : 1, parents.top(), selected);
             prevId = id;
         }
     }
+}
+
+HRESULT AppWindow::InitAutoComplete()
+{
+    HRESULT hr = S_OK;
+    if (CSettingsInstance().GetMRUEnabled())
+    {
+        hr = CPowerRenameMRU::CPowerRenameMRUSearch_CreateInstance(&m_searchMRU);
+        if (SUCCEEDED(hr))
+        {
+            for (const auto& item : m_searchMRU->GetMRUStrings())
+            {
+                if (!item.empty())
+                {
+                    m_mainUserControl.AppendSearchMRU(item);
+                }
+            }
+        }
+
+        if (SUCCEEDED(hr))
+        {
+            hr = CPowerRenameMRU::CPowerRenameMRUReplace_CreateInstance(&m_replaceMRU);
+            if (SUCCEEDED(hr))
+            {
+                for (const auto& item : m_replaceMRU->GetMRUStrings())
+                {
+                    if (!item.empty())
+                    {
+                        m_mainUserControl.AppendReplaceMRU(item);
+                    }
+                }
+            }
+        }
+    }
+
+    return hr;
 }
 
 HRESULT AppWindow::EnumerateShellItems(_In_ IEnumShellItems* enumShellItems)
@@ -250,10 +293,10 @@ void AppWindow::SearchReplaceChanged()
     CComPtr<IPowerRenameRegEx> prRegEx;
     if (m_prManager && SUCCEEDED(m_prManager->GetRenameRegEx(&prRegEx)))
     {
-        winrt::hstring searchTerm = m_mainUserControl.TextBoxSearch().Text();
+        winrt::hstring searchTerm = m_mainUserControl.AutoSuggestBoxSearch().Text();
         prRegEx->PutSearchTerm(searchTerm.c_str());
 
-        winrt::hstring replaceTerm = m_mainUserControl.TextBoxReplace().Text();
+        winrt::hstring replaceTerm = m_mainUserControl.AutoSuggestBoxReplace().Text();
         prRegEx->PutReplaceTerm(replaceTerm.c_str());
     }
 }
@@ -321,21 +364,25 @@ void AppWindow::UpdateFlag(PowerRenameFlags flag, UpdateFlagCommand command)
 
 void AppWindow::SetHandlers()
 {
-    m_mainUserControl.ChangedItem().PropertyChanged([&](winrt::Windows::Foundation::IInspectable const& sender, Data::PropertyChangedEventArgs const&) {
-        int32_t id = std::stoi(std::wstring{ m_mainUserControl.ChangedItem().Original() });
-        bool checked = m_mainUserControl.ChangedItem().Checked();
-        CComPtr<IPowerRenameItem> spItem;
-        m_prManager->GetItemById(id, &spItem);
-        spItem->PutSelected(checked);
-        UpdateCounts();
+    m_mainUserControl.ChangedItem().PropertyChanged([&](winrt::Windows::Foundation::IInspectable const& sender, Data::PropertyChangedEventArgs const& e) {
+        std::wstring property{ e.PropertyName() };
+        if (property.compare(L"Type") == 0)
+        {
+            SwitchView();
+        }
+        else if (property.compare(L"Checked") == 0 || property.compare(L"Original") == 0)
+        {
+            ToggleItem();
+        }
     });
-    // TextBox Search
-    m_mainUserControl.TextBoxSearch().TextChanged([&](winrt::Windows::Foundation::IInspectable const& sender, RoutedEventArgs const&) {
+
+    // AutoSuggestBox Search
+    m_mainUserControl.AutoSuggestBoxSearch().TextChanged([&](winrt::Windows::Foundation::IInspectable const& sender, AutoSuggestBoxTextChangedEventArgs const&) {
         SearchReplaceChanged();
     });
 
-    // TextBox Replace
-    m_mainUserControl.TextBoxReplace().TextChanged([&](winrt::Windows::Foundation::IInspectable const& sender, RoutedEventArgs const&) {
+    // AutoSuggestBox Replace
+    m_mainUserControl.AutoSuggestBoxReplace().TextChanged([&](winrt::Windows::Foundation::IInspectable const& sender, AutoSuggestBoxTextChangedEventArgs const&) {
         SearchReplaceChanged();
     });
 
@@ -469,6 +516,22 @@ void AppWindow::SetHandlers()
     });
 }
 
+void AppWindow::ToggleItem()
+{
+    int32_t id = std::stoi(std::wstring{ m_mainUserControl.ChangedItem().Original() });
+    bool checked = m_mainUserControl.ChangedItem().Checked();
+    CComPtr<IPowerRenameItem> spItem;
+    m_prManager->GetItemById(id, &spItem);
+    spItem->PutSelected(checked);
+    UpdateCounts();
+}
+
+void AppWindow::SwitchView()
+{
+    m_prManager->SwitchFilter(0);
+    PopulateExplorerItems();
+}
+
 void AppWindow::Rename()
 {
     if (m_prManager)
@@ -492,8 +555,8 @@ HRESULT AppWindow::ReadSettings()
         flags = CSettingsInstance().GetFlags();
         m_prManager->PutFlags(flags);
 
-        m_mainUserControl.TextBoxSearch().Text(CSettingsInstance().GetSearchText().c_str());
-        m_mainUserControl.TextBoxReplace().Text(CSettingsInstance().GetReplaceText().c_str());
+        m_mainUserControl.AutoSuggestBoxSearch().Text(CSettingsInstance().GetSearchText().c_str());
+        m_mainUserControl.AutoSuggestBoxReplace().Text(CSettingsInstance().GetReplaceText().c_str());
     }
     else
     {
@@ -514,25 +577,25 @@ HRESULT AppWindow::WriteSettings()
         m_prManager->GetFlags(&flags);
         CSettingsInstance().SetFlags(flags);
 
-        winrt::hstring searchTerm = m_mainUserControl.TextBoxSearch().Text();
+        winrt::hstring searchTerm = m_mainUserControl.AutoSuggestBoxSearch().Text();
         CSettingsInstance().SetSearchText(std::wstring{ searchTerm });
 
-        if (CSettingsInstance().GetMRUEnabled() && m_spSearchACL)
+        if (CSettingsInstance().GetMRUEnabled() && m_searchMRU)
         {
             CComPtr<IPowerRenameMRU> spSearchMRU;
-            if (SUCCEEDED(m_spSearchACL->QueryInterface(IID_PPV_ARGS(&spSearchMRU))))
+            if (SUCCEEDED(m_searchMRU->QueryInterface(IID_PPV_ARGS(&spSearchMRU))))
             {
                 spSearchMRU->AddMRUString(searchTerm.c_str());
             }
         }
 
-        winrt::hstring replaceTerm = m_mainUserControl.TextBoxReplace().Text();
+        winrt::hstring replaceTerm = m_mainUserControl.AutoSuggestBoxReplace().Text();
         CSettingsInstance().SetReplaceText(std::wstring{ replaceTerm });
 
-        if (CSettingsInstance().GetMRUEnabled() && m_spReplaceACL)
+        if (CSettingsInstance().GetMRUEnabled() && m_replaceMRU)
         {
             CComPtr<IPowerRenameMRU> spReplaceMRU;
-            if (SUCCEEDED(m_spReplaceACL->QueryInterface(IID_PPV_ARGS(&spReplaceMRU))))
+            if (SUCCEEDED(m_replaceMRU->QueryInterface(IID_PPV_ARGS(&spReplaceMRU))))
             {
                 spReplaceMRU->AddMRUString(replaceTerm.c_str());
             }

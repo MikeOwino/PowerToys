@@ -12,18 +12,12 @@ namespace winrt::PowerRenameUI_new::implementation
 {
     MainWindow::MainWindow()
     {
+        m_searchMRU = winrt::single_threaded_observable_vector<hstring>();
+        m_replaceMRU = winrt::single_threaded_observable_vector<hstring>();
+
         m_explorerItems = winrt::single_threaded_observable_vector<PowerRenameUI_new::ExplorerItem>();
         m_searchRegExShortcuts = winrt::single_threaded_observable_vector<PowerRenameUI_new::RegExShortcut>();
         m_fileRegExShortcuts = winrt::single_threaded_observable_vector<PowerRenameUI_new::RegExShortcut>();
-        //auto folder = winrt::make<PowerRenameUI_new::implementation::ExplorerItem>(0, L"New Folder", 0);
-        //folder.Children();
-        //folder.Children().Append(winrt::make<PowerRenameUI_new::implementation::ExplorerItem>(1, L"a.txt", 1));
-        //folder.Children().Append(winrt::make<PowerRenameUI_new::implementation::ExplorerItem>(2, L"b.txt", 1));
-        //folder.Children().Append(winrt::make<PowerRenameUI_new::implementation::ExplorerItem>(3, L"c.txt", 1));
-        //m_explorerItems.Append(folder);
-        //m_explorerItems.Append(winrt::make<PowerRenameUI_new::implementation::ExplorerItem>(4, L"1.txt", 1));
-        //m_explorerItems.Append(winrt::make<PowerRenameUI_new::implementation::ExplorerItem>(5, L"2.txt", 1));
-        //m_explorerItems.Append(winrt::make<PowerRenameUI_new::implementation::ExplorerItem>(6, L"3.txt", 1));
 
         m_searchRegExShortcuts.Append(winrt::make<PowerRenameUI_new::implementation::RegExShortcut>(L"\\.", L"Matches any character"));
         m_searchRegExShortcuts.Append(winrt::make<PowerRenameUI_new::implementation::RegExShortcut>(L"\\d", L"Any digit, short for [0-9]"));
@@ -43,6 +37,16 @@ namespace winrt::PowerRenameUI_new::implementation
         InitializeComponent();
     }
 
+    Windows::Foundation::Collections::IObservableVector<hstring> MainWindow::SearchMRU()
+    {
+        return m_searchMRU;
+    }
+
+    Windows::Foundation::Collections::IObservableVector<hstring> MainWindow::ReplaceMRU()
+    {
+        return m_replaceMRU;
+    }
+    
     winrt::Windows::Foundation::Collections::IObservableVector<winrt::PowerRenameUI_new::ExplorerItem> MainWindow::ExplorerItems()
     {
         return m_explorerItems;
@@ -58,12 +62,12 @@ namespace winrt::PowerRenameUI_new::implementation
         return m_fileRegExShortcuts;
     }
 
-    Windows::UI::Xaml::Controls::TextBox MainWindow::TextBoxSearch()
+    Windows::UI::Xaml::Controls::AutoSuggestBox MainWindow::AutoSuggestBoxSearch()
     {
         return textBox_search();
     }
 
-        Windows::UI::Xaml::Controls::TextBox MainWindow::TextBoxReplace()
+    Windows::UI::Xaml::Controls::AutoSuggestBox MainWindow::AutoSuggestBoxReplace()
     {
         return textBox_replace();
     }
@@ -143,9 +147,9 @@ namespace winrt::PowerRenameUI_new::implementation
         return m_changedItem;
     }
 
-    void MainWindow::AddExplorerItem(int32_t id, hstring const& original, int32_t type, int32_t parentId)
+    void MainWindow::AddExplorerItem(int32_t id, hstring const& original, hstring const& renamed, int32_t type, int32_t parentId, bool checked)
     {
-        auto newItem = winrt::make<PowerRenameUI_new::implementation::ExplorerItem>(id, original, type);
+        auto newItem = winrt::make<PowerRenameUI_new::implementation::ExplorerItem>(id, original, renamed, type, checked);
         if (parentId == 0)
         {
             m_explorerItems.Append(newItem);
@@ -166,9 +170,19 @@ namespace winrt::PowerRenameUI_new::implementation
         }
     }
 
+    void MainWindow::AppendSearchMRU(hstring const& value)
+    {
+        m_searchMRU.Append(value);
+    }
+
+    void MainWindow::AppendReplaceMRU(hstring const& value)
+    {
+        m_replaceMRU.Append(value);
+    }
+
     PowerRenameUI_new::ExplorerItem MainWindow::FindById(int32_t id)
     {
-        auto fakeRoot = winrt::make<PowerRenameUI_new::implementation::ExplorerItem>(0, L"Fake", 0);
+        auto fakeRoot = winrt::make<PowerRenameUI_new::implementation::ExplorerItem>(0, L"Fake", L"", 0, false);
         fakeRoot.Children(m_explorerItems);
         return FindById(fakeRoot, id);
     }
@@ -218,7 +232,29 @@ void winrt::PowerRenameUI_new::implementation::MainWindow::Checked_ids(winrt::Wi
 
 void winrt::PowerRenameUI_new::implementation::MainWindow::SelectAll(winrt::Windows::Foundation::IInspectable const&, winrt::Windows::UI::Xaml::RoutedEventArgs const&)
 {
-    auto fakeRoot = winrt::make<PowerRenameUI_new::implementation::ExplorerItem>(0, L"Fake", 0);
+    auto fakeRoot = winrt::make<PowerRenameUI_new::implementation::ExplorerItem>(0, L"Fake", L"", 0, false);
     fakeRoot.Children(m_explorerItems);
     ToggleAll(fakeRoot, chckBox_selectAll().IsChecked().GetBoolean());
+}
+
+void winrt::PowerRenameUI_new::implementation::MainWindow::btn_showAll_Click(winrt::Windows::Foundation::IInspectable const&, winrt::Windows::UI::Xaml::RoutedEventArgs const&)
+{
+    btn_showAll().IsChecked(true);
+    btn_showRenamed().IsChecked(false);
+    if (m_changedItem.Type() != 0)
+    {
+        m_explorerItems.Clear();
+        m_changedItem.Type(0);    
+    }
+}
+
+void winrt::PowerRenameUI_new::implementation::MainWindow::btn_showRenamed_Click(winrt::Windows::Foundation::IInspectable const&, winrt::Windows::UI::Xaml::RoutedEventArgs const&)
+{
+    btn_showRenamed().IsChecked(true);
+    btn_showAll().IsChecked(false);
+    if (m_changedItem.Type() != 1)
+    {
+        m_explorerItems.Clear();
+        m_changedItem.Type(1);
+    }
 }

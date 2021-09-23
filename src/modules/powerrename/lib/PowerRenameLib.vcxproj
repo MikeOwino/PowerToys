@@ -40,10 +40,12 @@
   </ItemDefinitionGroup>
   <ItemGroup>
     <ClInclude Include="Helpers.h" />
+    <ClInclude Include="MRUListHandler.h" />
     <ClInclude Include="PowerRenameEnum.h" />
     <ClInclude Include="PowerRenameItem.h" />
     <ClInclude Include="PowerRenameInterfaces.h" />
     <ClInclude Include="PowerRenameManager.h" />
+    <ClInclude Include="PowerRenameMRU.h" />
     <ClInclude Include="PowerRenameRegEx.h" />
     <ClInclude Include="Settings.h" />
     <ClInclude Include="srwlock.h" />
@@ -53,9 +55,11 @@
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="Helpers.cpp" />
+    <ClCompile Include="MRUListHandler.cpp" />
     <ClCompile Include="PowerRenameEnum.cpp" />
     <ClCompile Include="PowerRenameItem.cpp" />
     <ClCompile Include="PowerRenameManager.cpp" />
+    <ClCompile Include="PowerRenameMRU.cpp" />
     <ClCompile Include="PowerRenameRegEx.cpp" />
     <ClCompile Include="Settings.cpp" />
     <ClCompile Include="pch.cpp">

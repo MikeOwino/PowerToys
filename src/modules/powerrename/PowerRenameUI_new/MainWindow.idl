@@ -3,16 +3,19 @@ import "RegExShortcut.idl";
 
 namespace PowerRenameUI_new
 {
-    [default_interface]
-    runtimeclass MainWindow : Windows.UI.Xaml.Controls.UserControl
+    [default_interface] runtimeclass MainWindow : Windows.UI.Xaml.Controls.UserControl
     {
         MainWindow();
+        
+        Windows.Foundation.Collections.IObservableVector<String> SearchMRU { get; };
+        Windows.Foundation.Collections.IObservableVector<String> ReplaceMRU { get; };
+
         Windows.Foundation.Collections.IObservableVector<ExplorerItem> ExplorerItems { get; };
         Windows.Foundation.Collections.IObservableVector<RegExShortcut> SearchRegExShortcuts { get; };
         Windows.Foundation.Collections.IObservableVector<RegExShortcut> FileRegExShortcuts { get; };
 
-        Windows.UI.Xaml.Controls.TextBox TextBoxSearch();
-        Windows.UI.Xaml.Controls.TextBox TextBoxReplace();
+        Windows.UI.Xaml.Controls.AutoSuggestBox AutoSuggestBoxSearch();
+        Windows.UI.Xaml.Controls.AutoSuggestBox AutoSuggestBoxReplace();
 
         Windows.UI.Xaml.Controls.CheckBox ChckBoxRegex();
         Windows.UI.Xaml.Controls.CheckBox ChckBoxCaseSensitive();
@@ -33,8 +36,10 @@ namespace PowerRenameUI_new
         Windows.UI.Xaml.Controls.Primitives.ToggleButton TglBtnTitleCase();
         Windows.UI.Xaml.Controls.Primitives.ToggleButton TglBtnCapitalize();
 
-        void AddExplorerItem(Int32 id, String original, Int32 type, Int32 parentId);
+        void AddExplorerItem(Int32 id, String original, String renamed, Int32 type, Int32 parentId, Boolean checked);
         void UpdateExplorerItem(Int32 id, String newName);
+        void AppendSearchMRU(String value);
+        void AppendReplaceMRU(String value);
 
         ExplorerItem ChangedItem();
     }

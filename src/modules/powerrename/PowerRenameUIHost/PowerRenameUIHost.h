@@ -8,6 +8,7 @@
 #include <PowerRenameItem.h>
 #include <PowerRenameManager.h>
 #include <PowerRenameInterfaces.h>
+#include <PowerRenameMRU.h>
 
 #include <winrt/Windows.Foundation.Collections.h>
 #include <winrt/Windows.system.h>
@@ -105,11 +106,14 @@ private:
     HRESULT CreateShellItemArrayFromPaths(std::vector<std::wstring> files, IShellItemArray** ppsia);
 
     void PopulateExplorerItems();
+    HRESULT InitAutoComplete();
     HRESULT EnumerateShellItems(_In_ IEnumShellItems* enumShellItems);
     void SearchReplaceChanged();
     void ValidateFlags(PowerRenameFlags flag);
     void UpdateFlag(PowerRenameFlags flag, UpdateFlagCommand command);
     void SetHandlers();
+    void ToggleItem();
+    void SwitchView();
     void Rename();
     HRESULT ReadSettings();
     HRESULT WriteSettings();
@@ -139,10 +143,8 @@ private:
     CComPtr<IPowerRenameEnum> m_prEnum;
     UIHostPowerRenameManagerEvents m_mngrEvents;
     DWORD m_cookie = 0;
-    CComPtr<IAutoComplete2> m_spSearchAC;
-    CComPtr<IUnknown> m_spSearchACL;
-    CComPtr<IAutoComplete2> m_spReplaceAC;
-    CComPtr<IUnknown> m_spReplaceACL;
+    CComPtr<IPowerRenameMRU> m_searchMRU;
+    CComPtr<IPowerRenameMRU> m_replaceMRU;
     UINT m_selectedCount = 0;
     UINT m_renamingCount = 0;
 };

@@ -15,12 +15,14 @@ namespace winrt::PowerRenameUI_new::implementation
     {
         MainWindow();
 
+        Windows::Foundation::Collections::IObservableVector<hstring> SearchMRU();
+        Windows::Foundation::Collections::IObservableVector<hstring> ReplaceMRU();
         winrt::Windows::Foundation::Collections::IObservableVector<PowerRenameUI_new::ExplorerItem> ExplorerItems();
         winrt::Windows::Foundation::Collections::IObservableVector<PowerRenameUI_new::RegExShortcut> SearchRegExShortcuts();
         winrt::Windows::Foundation::Collections::IObservableVector<PowerRenameUI_new::RegExShortcut> FileRegExShortcuts();
 
-        Windows::UI::Xaml::Controls::TextBox TextBoxSearch();
-        Windows::UI::Xaml::Controls::TextBox TextBoxReplace();
+        Windows::UI::Xaml::Controls::AutoSuggestBox AutoSuggestBoxSearch();
+        Windows::UI::Xaml::Controls::AutoSuggestBox AutoSuggestBoxReplace();
 
         Windows::UI::Xaml::Controls::CheckBox ChckBoxRegex();
         Windows::UI::Xaml::Controls::CheckBox ChckBoxCaseSensitive();
@@ -44,20 +46,26 @@ namespace winrt::PowerRenameUI_new::implementation
 
         PowerRenameUI_new::ExplorerItem ChangedItem();
 
-        void AddExplorerItem(int32_t id, hstring const& original, int32_t type, int32_t parentId);
+        void AddExplorerItem(int32_t id, hstring const& original, hstring const& renamed, int32_t type, int32_t parentId, bool checked);
         void UpdateExplorerItem(int32_t id, hstring const& newName);
+        void AppendSearchMRU(hstring const& value);
+        void AppendReplaceMRU(hstring const& value);
+
+        void Checked_ids(winrt::Windows::Foundation::IInspectable const& sender, winrt::Windows::UI::Xaml::RoutedEventArgs const& e);
+        void SelectAll(winrt::Windows::Foundation::IInspectable const& sender, winrt::Windows::UI::Xaml::RoutedEventArgs const& e);
+        void btn_showAll_Click(winrt::Windows::Foundation::IInspectable const& sender, winrt::Windows::UI::Xaml::RoutedEventArgs const& e);
+        void btn_showRenamed_Click(winrt::Windows::Foundation::IInspectable const& sender, winrt::Windows::UI::Xaml::RoutedEventArgs const& e);
     private:
-        PowerRenameUI_new::ExplorerItem m_changedItem{ -1, L"nvm", 0 };
+        PowerRenameUI_new::ExplorerItem m_changedItem{ -1, L"nvm", L"", 0, false };
         PowerRenameUI_new::ExplorerItem FindById(int32_t id);
         PowerRenameUI_new::ExplorerItem FindById(PowerRenameUI_new::ExplorerItem& root, int32_t id);
         void ToggleAll(PowerRenameUI_new::ExplorerItem node, bool checked);
 
+        winrt::Windows::Foundation::Collections::IObservableVector<hstring> m_searchMRU;
+        winrt::Windows::Foundation::Collections::IObservableVector<hstring> m_replaceMRU;
         winrt::Windows::Foundation::Collections::IObservableVector<PowerRenameUI_new::ExplorerItem> m_explorerItems;
         winrt::Windows::Foundation::Collections::IObservableVector<PowerRenameUI_new::RegExShortcut> m_searchRegExShortcuts;
         winrt::Windows::Foundation::Collections::IObservableVector<PowerRenameUI_new::RegExShortcut> m_fileRegExShortcuts;
-    public:
-        void Checked_ids(winrt::Windows::Foundation::IInspectable const& sender, winrt::Windows::UI::Xaml::RoutedEventArgs const& e);
-        void SelectAll(winrt::Windows::Foundation::IInspectable const& sender, winrt::Windows::UI::Xaml::RoutedEventArgs const& e);
     };
 }
 

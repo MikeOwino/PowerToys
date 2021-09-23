@@ -338,21 +338,15 @@ IFACEMETHODIMP CPowerRenameManager::GetFilter(_Out_ DWORD* filter)
     return S_OK;
 }
 
-IFACEMETHODIMP CPowerRenameManager::SwitchFilter(_In_ int columnNumber)
+IFACEMETHODIMP CPowerRenameManager::SwitchFilter(_In_ int)
 {
     switch (m_filter)
     {
     case PowerRenameFilters::None:
-        m_filter = (columnNumber == 0) ? PowerRenameFilters::Selected : PowerRenameFilters::ShouldRename;
-        break;
-    case PowerRenameFilters::Selected:
-        m_filter = (columnNumber == 0) ? PowerRenameFilters::FlagsApplicable : PowerRenameFilters::ShouldRename;
-        break;
-    case PowerRenameFilters::FlagsApplicable:
-        m_filter = (columnNumber == 0) ? PowerRenameFilters::None : PowerRenameFilters::ShouldRename;
+        m_filter = PowerRenameFilters::ShouldRename;
         break;
     case PowerRenameFilters::ShouldRename:
-        m_filter = (columnNumber == 0) ? PowerRenameFilters::Selected : PowerRenameFilters::None;
+        m_filter = PowerRenameFilters::None;
         break;
     }
 

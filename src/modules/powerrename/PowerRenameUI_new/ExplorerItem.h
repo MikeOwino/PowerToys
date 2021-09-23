@@ -13,7 +13,7 @@ namespace winrt::PowerRenameUI_new::implementation
         
         ExplorerItem() = delete;
 
-        ExplorerItem(int32_t id, hstring const& original, int32_t type);
+        ExplorerItem(int32_t id, hstring const& original, hstring const& renamed, int32_t type, bool checked);
         int32_t Id();
         hstring IdStr();
         hstring Original();
