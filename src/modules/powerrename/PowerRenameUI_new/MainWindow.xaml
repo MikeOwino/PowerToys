@@ -26,10 +26,10 @@
                     <ColumnDefinition Width="*"/>
                 </Grid.ColumnDefinitions>
 
-                <CheckBox TabIndex="0" Grid.Column="0" Checked="Checked_ids" Unchecked="Checked_ids"  Content="" Name="{x:Bind IdStr}" AutomationProperties.Name="{x:Bind Original}" AutomationProperties.HelpText="{x:Bind Renamed}" IsChecked="{x:Bind Checked, Mode=TwoWay}" />
+                <CheckBox TabIndex="0" Grid.Column="0" XYFocusKeyboardNavigation="Enabled"  Checked="Checked_ids" IsTabStop="True" Unchecked="Checked_ids"  Content="" Name="{x:Bind IdStr}" AutomationProperties.Name="{x:Bind Original}" AutomationProperties.HelpText="{x:Bind Renamed}" IsChecked="{x:Bind Checked, Mode=TwoWay}" />
                 <Image Width="16" Source="ms-appx:///Assets/file.png" HorizontalAlignment="Left" Grid.Column="1"/>
 
-                <TextBlock Text="{x:Bind Original, Mode=OneWay}" Width="{Binding ElementName=WidthSlider, Path=Value, Mode=OneWay}" FontFamily="SemiBold" Foreground="Black"  VerticalAlignment="Center"  FontSize="12" Grid.Column="2"/>
+                <TextBlock Text="{x:Bind Original, Mode=OneWay}" FontFamily="SemiBold" VerticalAlignment="Center"  FontSize="12" Grid.Column="2"/>
             </Grid>
         </DataTemplate>
 
@@ -46,12 +46,12 @@
                     <RowDefinition Height="*" />
                 </Grid.RowDefinitions>
 
-                <CheckBox TabIndex="0" IsTabStop="true" Grid.Row="0" Grid.Column="0" Checked="Checked_ids" Unchecked="Checked_ids" Content="" Name="{x:Bind IdStr}" AutomationProperties.Name="{x:Bind Original}" AutomationProperties.HelpText="{x:Bind Renamed}" IsChecked="{x:Bind Checked, Mode=TwoWay}" />
+                <CheckBox TabIndex="0" IsTabStop="True" XYFocusKeyboardNavigation="Enabled"  Grid.Row="0" Grid.Column="0" Checked="Checked_ids" Unchecked="Checked_ids" Content="" Name="{x:Bind IdStr}" AutomationProperties.Name="{x:Bind Original}" AutomationProperties.HelpText="{x:Bind Renamed}" IsChecked="{x:Bind Checked, Mode=TwoWay}" />
                 <Image Width="16" Source="ms-appx:///Assets/folder.png" HorizontalAlignment="Left" Grid.Column="1"/>
 
-                <TextBlock Text="{x:Bind Original, Mode=OneWay}" Width="{Binding ElementName=WidthSlider, Path=Value, Mode=OneWay}" FontFamily="SemiBold" Foreground="Black"  VerticalAlignment="Center"  FontSize="12" Grid.Column="2"/>
+                <TextBlock Text="{x:Bind Original, Mode=OneWay}" FontFamily="SemiBold" VerticalAlignment="Center"  FontSize="12" Grid.Column="2"/>
 
-                <ListView Grid.ColumnSpan="3" IsTabStop="false"  SelectionMode="None" IsItemClickEnabled="False" ItemsSource="{x:Bind Children}" Grid.Row="1" ItemTemplateSelector="{StaticResource ExplorerItemTemplateSelector}">
+                <ListView Grid.ColumnSpan="3" IsTabStop="false" XYFocusKeyboardNavigation="Enabled"  SelectionMode="None" IsItemClickEnabled="False" ItemsSource="{x:Bind Children}" Grid.Row="1" ItemTemplateSelector="{StaticResource ExplorerItemTemplateSelector}">
                     <ListView.ItemContainerStyle>
                         <Style TargetType="ListViewItem">
                             <Setter Property="IsTabStop" Value="False"/>
@@ -72,7 +72,7 @@
             </Grid>
         </DataTemplate>
         <DataTemplate x:Key="RenamedFolderTemplate" x:DataType="local:ExplorerItem">
-            <Grid Margin="0,4,0,0">
+            <Grid Margin="0,4,0,0" >
                 <Grid.RowDefinitions>
                     <RowDefinition Height="24" />
                     <RowDefinition Height="*" />
@@ -88,6 +88,7 @@
                           IsItemClickEnabled="False"
                           ItemsSource="{x:Bind Children}"
                           Grid.Row="1"
+                          
                           ItemTemplateSelector="{StaticResource RenamedExplorerItemTemplateSelector}">
                     <ListView.ItemContainerStyle>
                         <Style TargetType="ListViewItem">
@@ -190,7 +191,7 @@
                         <ColumnDefinition Width="*" MinWidth="400" x:Name="OriginalColumn" />
                         <ColumnDefinition Width="*" />
                     </Grid.ColumnDefinitions>
-                    <ListView IsTabStop="false" SelectionMode="None" IsItemClickEnabled="False" ItemsSource="{x:Bind ExplorerItems, Mode=OneWay}" Margin="4,0,0,0" ItemTemplateSelector="{StaticResource ExplorerItemTemplateSelector}">
+                    <ListView IsTabStop="false" SelectionMode="None" XYFocusKeyboardNavigation="Enabled"  IsItemClickEnabled="False" ItemsSource="{x:Bind ExplorerItems, Mode=OneWay}" Margin="4,0,0,0" ItemTemplateSelector="{StaticResource ExplorerItemTemplateSelector}">
                         <ListView.ItemContainerStyle>
                             <Style TargetType="ListViewItem">
                                 <Setter Property="IsTabStop" Value="False"/>
