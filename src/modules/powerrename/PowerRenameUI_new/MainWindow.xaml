@@ -227,12 +227,11 @@
             <StackPanel Orientation="Vertical"
                         Padding="0,0,0,16">
                 <Grid>
-                    <AutoSuggestBox x:Name="textBox_search"
+                    <TextBox x:Name="textBox_search"
                              PlaceholderText="Search for"
                              Height="48"
-                             Padding="12,12,0,0"
                              VerticalContentAlignment="Center"
-                             ItemsSource="{x:Bind SearchMRU}"/>
+                           />
 
                     <Button FontFamily="Segoe Fluent Icons"
                             VerticalAlignment="Center"
@@ -312,10 +311,8 @@
                            HorizontalAlignment="Stretch"
                            Margin="0,16,0,20" />
                 <AutoSuggestBox x:Name="textBox_replace"
-                         Margin="0,0,0,0"
                          PlaceholderText="Replace with"
                          Height="48"
-                         Padding="12,12,0,0"
                                 VerticalAlignment="Center"
                          VerticalContentAlignment="Center"
                          ItemsSource="{x:Bind ReplaceMRU}" />
