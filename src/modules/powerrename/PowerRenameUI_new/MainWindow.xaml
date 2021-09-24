@@ -227,11 +227,11 @@
             <StackPanel Orientation="Vertical"
                         Padding="0,0,0,16">
                 <Grid>
-                    <TextBox x:Name="textBox_search"
+                    <AutoSuggestBox x:Name="textBox_search"
                              PlaceholderText="Search for"
                              Height="48"
                              VerticalContentAlignment="Center"
-                           />
+                             ItemsSource="{x:Bind SearchMRU}"/>
 
                     <Button FontFamily="Segoe Fluent Icons"
                             VerticalAlignment="Center"
