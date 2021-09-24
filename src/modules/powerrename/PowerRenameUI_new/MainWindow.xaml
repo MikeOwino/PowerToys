@@ -127,8 +127,8 @@
             <Grid.ColumnDefinitions>
                 <ColumnDefinition Width="36" />
                 <ColumnDefinition Width="48" />
-                <ColumnDefinition Width="*" />
-                <ColumnDefinition Width="*" />
+                <ColumnDefinition Width="*" MinWidth="320"/>
+                <ColumnDefinition Width="*" MinWidth="320"/>
             </Grid.ColumnDefinitions>
 
             <CheckBox x:Name="chckBox_selectAll" IsChecked="True"
@@ -187,15 +187,29 @@
                           Grid.Row="1">
                 <Grid>
                     <Grid.ColumnDefinitions>
-                        <ColumnDefinition Width="Auto" MinWidth="240" x:Name="OriginalColumn" />
-                        <ColumnDefinition Width="300*" />
+                        <ColumnDefinition Width="*" MinWidth="400" x:Name="OriginalColumn" />
+                        <ColumnDefinition Width="*" />
                     </Grid.ColumnDefinitions>
-                    <controls:ItemsRepeater ItemsSource="{x:Bind ExplorerItems, Mode=OneWay}"
+                    <ListView IsTabStop="false" SelectionMode="None" IsItemClickEnabled="False" ItemsSource="{x:Bind ExplorerItems, Mode=OneWay}" Margin="4,0,0,0" ItemTemplateSelector="{StaticResource ExplorerItemTemplateSelector}">
+                        <ListView.ItemContainerStyle>
+                            <Style TargetType="ListViewItem">
+                                <Setter Property="IsTabStop" Value="False"/>
+                            </Style>
+                        </ListView.ItemContainerStyle>
+                    </ListView>
+                    <!--<controls:ItemsRepeater ItemsSource="{x:Bind ExplorerItems, Mode=OneWay}"
                                             Margin="16,0,0,0"
-                                            ItemTemplate="{StaticResource ExplorerItemTemplateSelector}" />
-                    <controls:ItemsRepeater ItemsSource="{x:Bind ExplorerItems, Mode=OneWay}"
+                                            ItemTemplate="{StaticResource ExplorerItemTemplateSelector}" />-->
+                    <ListView Grid.Column="1" IsTabStop="false" SelectionMode="None" IsItemClickEnabled="False" ItemsSource="{x:Bind ExplorerItems, Mode=OneWay}" ItemTemplateSelector="{StaticResource RenamedExplorerItemTemplateSelector}">
+                        <ListView.ItemContainerStyle>
+                            <Style TargetType="ListViewItem">
+                                <Setter Property="IsTabStop" Value="False"/>
+                            </Style>
+                        </ListView.ItemContainerStyle>
+                    </ListView>
+                    <!--<controls:ItemsRepeater ItemsSource="{x:Bind ExplorerItems, Mode=OneWay}"
                                             Grid.Column="1"
-                                            ItemTemplate="{StaticResource RenamedExplorerItemTemplateSelector}" />
+                                            ItemTemplate="{StaticResource RenamedExplorerItemTemplateSelector}" />-->
                 </Grid>
             </ScrollViewer>
         </Grid>
