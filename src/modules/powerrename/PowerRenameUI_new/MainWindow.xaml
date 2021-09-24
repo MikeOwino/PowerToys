@@ -316,6 +316,7 @@
                          PlaceholderText="Replace with"
                          Height="48"
                          Padding="12,12,0,0"
+                                VerticalAlignment="Center"
                          VerticalContentAlignment="Center"
                          ItemsSource="{x:Bind ReplaceMRU}" />
 
